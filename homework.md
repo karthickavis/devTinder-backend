@@ -1,0 +1,6 @@
+- Create a new folder 
+- install packages
+- install mongoose
+- connected to database /devtinder
+- create a user schema
+- create a signup api and push data into db
