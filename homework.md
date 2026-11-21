@@ -4,3 +4,11 @@
 - connected to database /devtinder
 - create a user schema
 - create a signup api and push data into db
+- create a express json for reading data
+- create a user api and feed api
+- get user by id 
+- create a delete api
+- create a update api
+- explore the mongoose model methods
+- explore a schema validation
+- add validation in schema
