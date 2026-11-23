@@ -1,4 +1,5 @@
 const mongoose=require("mongoose")
+const validator=require("validator")
 
 const userSchema= new mongoose.Schema({
     firstName:{
@@ -18,13 +19,23 @@ const userSchema= new mongoose.Schema({
         unique:true,
         trim:true,
         lowercase:true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("invalid emailId")
+            }
+        }
     },
     password:{
         type:String,
         minLength:5,
-        maxLength:30,
+        maxLength:100,
         trim:true,
-        required:true
+        required:true,
+         validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("password is not strong")
+            }
+        }
     },
     age:{
      type:Number,
@@ -32,7 +43,7 @@ const userSchema= new mongoose.Schema({
     },
     gender:{
         type:String,
-        validators(value){
+        validate(value){
          if(!["male","female","others"].includes(value)){
             throw new error("gender not a valid type")
          }
@@ -46,6 +57,15 @@ const userSchema= new mongoose.Schema({
     skills:{
         type:[String],
 
+    },
+    photoUrl:{
+        type:String,
+        default:"https://img.magnific.com/premium-vector/translator-icon_1076610-18679.jpg?semt=ais_hybrid&w=740&q=80",
+         validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("invalid photoUrl")
+            }
+        }
     }
 },{timestamps:true})
 

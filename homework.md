@@ -12,3 +12,10 @@
 - explore the mongoose model methods
 - explore a schema validation
 - add validation in schema
+- add api level validation on patch and signup
+- install validator
+- explore validator library function and use validator function for schema level validation
+- validate the signup data
+- create a helper function
+- install bcrypt and hash the password
+

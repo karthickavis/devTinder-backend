@@ -2,16 +2,28 @@ const express=require("express")
 const connectDB=require("./config/db")
 const app=express()
 const User=require("./models/user")
+const {validateSignupData}=require("./utilis/validation")
+const bcrypt=require("bcrypt")
 app.use(express.json())
 
 app.post("/signup",async(req,res)=>{
     
-     const obj=new User(req.body)
+
+     
     try{
+        validateSignupData(req)
+        const {firstName,lastName,emailId,password}=req.body
+        const passwordhash=await bcrypt.hash(password,10)
+        const obj=new User({
+            firstName,
+            lastName,
+            emailId,
+            password:passwordhash
+        })
       await obj.save()
       res.send("user created sucessfully")
     } catch (err) {
-         console.log("user cannot save :",err.message)
+         res.status(400).send("Error :"+ err.message)
     }
 
 })
@@ -48,11 +60,21 @@ app.delete("/user",async(req,res)=>{
     }
 })
 
-app.patch("/user",async(req,res)=>{
-    const userId=req.body.userId;
+app.patch("/user/:userId",async(req,res)=>{
+    const userId=req.params.userId;
     const data= req.body
 
      try{
+        const allowed_updates=["about","gender","skills","photoUrl","age"]
+        const eligible=Object.keys(data).every((k)=>allowed_updates.includes(k))
+        if(!eligible){
+          throw new Error("invalid update field")
+        }
+
+        if(data?.skills?.length>15){
+            throw new Error("cannot add more than 15 skills")
+        }
+    
         const users=await User.findByIdAndUpdate({_id:userId},data,{returnDocument:"after",runValidators:true})
         console.log(users)
         res.send("user updated successfully")
@@ -70,6 +92,6 @@ connectDB()
     console.log("db not connected")
 })
 
-console.log("bye")
+
 
 
