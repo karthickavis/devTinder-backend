@@ -18,4 +18,13 @@
 - validate the signup data
 - create a helper function
 - install bcrypt and hash the password
+- create a login api 
+- validate the data and compare the password and throw if any error
+- install cookieparser
+- just send a dummy cookie to browser
+- create get/profile api and check if you get the cookie back
+- install json webtoken
+- in login api,after email and password validation, create a jwt token and send it to user 
+- read the cookie inside your profile api and find the logged in user.
+
 

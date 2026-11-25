@@ -2,14 +2,14 @@ const express=require("express")
 const connectDB=require("./config/db")
 const app=express()
 const User=require("./models/user")
-const {validateSignupData}=require("./utilis/validation")
+const {validateSignupData,validateLoginData}=require("./utilis/validation")
 const bcrypt=require("bcrypt")
+const cookieParser=require("cookie-parser")
+const jwt=require("jsonwebtoken")
 app.use(express.json())
+app.use(cookieParser())
 
-app.post("/signup",async(req,res)=>{
-    
-
-     
+app.post("/signup",async(req,res)=>{  
     try{
         validateSignupData(req)
         const {firstName,lastName,emailId,password}=req.body
@@ -28,6 +28,45 @@ app.post("/signup",async(req,res)=>{
 
 })
 
+app.post("/login",async(req,res)=>{
+    try{
+        validateLoginData(req)
+        const {emailId,password}=req.body
+
+        const user=await User.findOne({emailId:emailId})
+
+        if(!user){
+            throw new Error("invalid credentials")
+        }
+        const isvalidpassword=await bcrypt.compare(password,user.password)
+        if(isvalidpassword){
+            const token=await jwt.sign({_id:user._id},"devTinder@123")
+            res.cookie("token",token)
+            res.status(200).send("login successfull")
+        }else{
+            throw new Error("invalid credentials")
+        }
+
+    }catch(err){
+        res.status(400).send("something went wrong " + err.message)
+    }
+})
+app.get("/profile",async(req,res)=>{
+    try{
+       const token=req.cookies.token
+    
+       const decoded=await jwt.verify(token,"devTinder@123");
+       const {_id}=decoded
+     const user=await User.findById(_id)
+     if(!user){
+        throw new Error("user doesnt exists")    
+     }
+
+       res.send(user)
+    }catch(err){
+        res.status(400).send("something went wrong " + err.message)
+    }
+})
 app.get("/user",async(req,res)=>{
     const email=req.body.emailId
     
